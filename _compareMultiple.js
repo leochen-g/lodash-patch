@@ -22,13 +22,14 @@ function compareMultiple(object, other, orders) {
       ordersLength = orders.length;
 
   while (++index < length) {
-    var result = compareAscending(objCriteria[index], othCriteria[index]);
+    var order = index < ordersLength ? orders[index] : null
+    var cmpFn = (order && typeof order === 'function') ? order: compareAscending
+    var result = cmpFn(objCriteria[index], othCriteria[index])
     if (result) {
-      if (index >= ordersLength) {
-        return result;
+      if (order && typeof order !== 'function') {
+        return result * (order === 'desc' ? -1 : 1)
       }
-      var order = orders[index];
-      return result * (order == 'desc' ? -1 : 1);
+      return result
     }
   }
   // Fixes an `Array#sort` bug in the JS engine embedded in Adobe applications
